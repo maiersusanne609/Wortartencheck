@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wortarten-Detektive</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff4dc;--card:#fff;--ink:#2b2a33;--mut:#6b6a75;--pri:#6c4cf1;--ok:#2fb36d;--bad:#e5484d;--line:#e6dfcf;--mark:#ffd84d;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17151f;--card:#242130;--ink:#f3f1fa;--mut:#a9a6b8;--pri:#9b85ff;--ok:#43c985;--bad:#ff6b70;--line:#3a3650;--mark:#8a6d00;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17151f;--card:#242130;--ink:#f3f1fa;--mut:#a9a6b8;--pri:#9b85ff;--ok:#43c985;--bad:#ff6b70;--line:#3a3650;--mark:#8a6d00;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 Lexend,"Trebuchet MS",Verdana,sans-serif}
+#app{max-width:720px;margin:0 auto;padding:16px}
+.hero{text-align:center;margin:12px 0 20px}.logo{font-size:56px}h1{margin:4px 0;font-size:28px;color:var(--pri)}h2{font-size:20px;margin:6px 0 12px}
+.lvl{display:block;width:100%;text-align:left;margin:12px 0;padding:16px 18px;border:3px solid var(--line);border-radius:20px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+.lvl:hover{border-color:var(--pri)}.lvl span{font-size:34px;float:left;margin-right:14px}.lvl b{font-size:20px}.lvl small{display:block;color:var(--mut);font-size:15px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:14px;color:var(--mut)}
+.bar{flex:1;height:12px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--pri);transition:width .3s}
+.ghost{border:0;background:var(--card);border-radius:12px;padding:6px 10px;font:inherit;cursor:pointer;color:var(--ink)}
+.card{background:var(--card);border-radius:22px;padding:20px;box-shadow:0 4px 0 var(--line)}
+.st{display:inline-block;background:var(--pri);color:#fff;border-radius:20px;padding:2px 14px;font-size:14px;margin-bottom:8px}
+.big{font-size:26px;font-weight:700;text-align:center;margin:14px 0}.sent{font-size:22px;margin:12px 0;line-height:1.8}
+mark{background:var(--mark);color:var(--ink);padding:2px 8px;border-radius:8px;font-weight:700}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.opt,.wd,.go,.so,.chip{font:inherit;font-size:17px;padding:12px;border:3px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled),.wd:hover:not(:disabled),.so:hover,.chip:hover{border-color:var(--pri)}
+.wd{display:inline-block;margin:4px;font-size:20px;padding:8px 12px}.sel{border-color:var(--pri);background:var(--mark)}
+.ok{border-color:var(--ok)!important;background:color-mix(in srgb,var(--ok) 25%,var(--card))!important}
+.bad{border-color:var(--bad)!important;background:color-mix(in srgb,var(--bad) 25%,var(--card))!important}
+.miss{border:3px dashed var(--mark)!important}
+.go{background:var(--pri);color:#fff;border-color:var(--pri);margin-top:12px;font-weight:700}
+.fb{margin-top:14px;padding:10px 14px;border-radius:14px;font-weight:600}.fb.g{background:color-mix(in srgb,var(--ok) 25%,var(--card))}.fb.r{background:color-mix(in srgb,var(--bad) 25%,var(--card))}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0;padding:6px;border-radius:12px;flex-wrap:wrap}.row b{min-width:150px}
+select{font:inherit;font-size:16px;padding:8px;border-radius:12px;border:3px solid var(--line);background:var(--card);color:var(--ink);flex:1;min-width:150px}
+.end{text-align:center}.stars{font-size:44px;letter-spacing:6px}
+.ws{margin:8px 0}.cb .wd::before{content:"☐ "}.cb .sel::before{content:"☑ "}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.chip{font-size:18px;padding:8px 12px}
+.bks{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.bsk{min-height:80px;border:3px dashed var(--line);border-radius:16px;background:var(--card);color:var(--ink);font:inherit;padding:8px;cursor:pointer}.bsk div{font-size:14px;color:var(--mut)}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.cardm{height:70px;border:3px solid var(--line);border-radius:14px;background:var(--pri);color:#fff;font:inherit;font-size:14px;cursor:pointer;word-break:break-word}.cardm.op{background:var(--card);color:var(--ink)}
+.sw{display:inline-block;text-align:center;margin:4px 6px;font-size:22px}.sw small{display:block;font-size:12px;color:var(--ok)}.sw small.x{color:var(--bad)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const TY=["Nomen","Verb","Adjektiv","Pronomen","Artikel","Numerale","Konjunktion","Präposition"],
+TG={N:0,V:1,J:2,O:3,A:4,Z:5,K:6,P:7},
+DE=["Namenwort","Tunwort","Eigenschaftswort","Fürwort","Begleiter","Zahlwort","Bindewort","Verhältniswort"],
+PL=["Nomen","Verben","Adjektive","Pronomen","Artikel","Numerale","Konjunktionen","Präpositionen"],
+ST=["Fachbegriffe zuordnen","Fachbegriff ↔ deutscher Name","Welche Wortart?","Markiertes Wort benennen","Wörter antippen","Lückentext","Außenseiter finden","Stimmt das?"];
+const LV=[
+{n:"Level 1 · Einsteiger",e:"🌱",d:"Immer nur 4 Antworten zur Auswahl. Einfache Sätze.",opt:4,
+S:["Die:A Katze:N schläft:V auf:P dem:A Sofa:N.","Der:A kleine:J Hase:N rennt:V.","Mia:N malt:V ein:A Bild:N.","Wir:O lesen:V ein:A Buch:N.","Das:A Eis:N ist:V kalt:J.","Der:A Himmel:N ist:V blau:J.","Lena:N und:K Tim:N spielen:V Fußball:N.","Ich:O habe:V zwei:Z Katzen:N.","Er:O trinkt:V heißen:J Tee:N.","Die:A Kinder:N lachen:V und:K singen:V.","Der:A Ball:N liegt:V unter:P dem:A Tisch:N.","Sie:O baut:V ein:A rotes:J Haus:N.","Drei:Z Vögel:N sitzen:V auf:P dem:A Dach:N.","Du:O hast:V einen:A neuen:J Stift:N."],
+W:["Katze:N","lustig:J","springen:V","wir:O","die:A","fünf:Z","aber:K","unter:P","Blume:N","schnell:J","essen:V","du:O","ein:A","und:K"],
+O:["Hund,Tisch,laufen,Blume|laufen","rot,schön,singen,klein|singen","spielen,Haus,lachen,essen|Haus","und,aber,oder,auf|auf","der,die,Katze,das|Katze","ich,du,wir,Tisch|Tisch"],
+G:["Ich mag Eis ___ Kuchen.|und|und,auf,der","___ Sonne scheint.|Die|Die,Wir,und","Das Buch liegt ___ dem Tisch.|auf|auf,und,rot","___ spielt Fußball.|Er|Er,und,auf","Ich habe ___ Katzen.|zwei|zwei,rot,wir","Möchtest du Tee ___ Kakao?|oder|oder,auf,die"],
+F:["„Tisch“ ist ein Nomen.|1","„schnell“ ist ein Verb.|0","„und“ ist eine Konjunktion.|1","„fünf“ ist ein Pronomen.|0","„auf“ ist eine Präposition.|1","„wir“ ist ein Adjektiv.|0","„der“ ist ein Artikel.|1","„laufen“ ist ein Nomen.|0"]},
+{n:"Level 2 · Fortgeschrittene",e:"🚀",d:"Alle 8 Wortarten zur Auswahl. Längere Sätze.",opt:8,
+S:["Die:A Klasse:N fährt:V in:P den:A Zoo:N.","Die:A Kinder:N sehen:V große:J Elefanten:N und:K freche:J Affen:N.","Ein:A kleiner:J Affe:N klettert:V auf:P den:A hohen:J Baum:N.","Die:A Tierpflegerin:N füttert:V die:A hungrigen:J Löwen:N.","Wir:O essen:V zwei:Z Brötchen:N und:K trinken:V Saft:N.","Tom:N ist:V müde:J, denn:K er:O hat:V gespielt:V.","Lisa:N will:V spielen:V, aber:K es:O regnet:V.","Ben:N packt:V den:A blauen:J Rucksack:N.","Er:O legt:V zwei:Z Äpfel:N in:P die:A Tasche:N.","Sie:O geht:V mit:P dem:A Hund:N.","Der:A Lehrer:N schreibt:V einen:A langen:J Satz:N an:P die:A Tafel:N.","Vier:Z fleißige:J Schüler:N lesen:V ein:A spannendes:J Buch:N.","Ich:O mag:V Eis:N oder:K Kuchen:N.","Die:A Sonne:N scheint:V und:K der:A Himmel:N ist:V blau:J."],
+W:["Freundin:N","mutig:J","rennen:V","sie:O","der:A","dreißig:Z","oder:K","neben:P","Schokolade:N","freundlich:J","schreiben:V","er:O","eine:A","sieben:Z","weil:K","hinter:P"],
+O:["lustig,Schule,Lehrer,Buch|lustig","auf,unter,und,neben|und","zwei,drei,vier,Hund|Hund","er,sie,es,schnell|schnell","weil,denn,aber,mit|mit","malen,Bild,lesen,rennen|Bild"],
+G:["Ich bleibe zu Hause, ___ ich krank bin.|weil|weil,auf,wir","Der Hund schläft ___ dem Sofa.|unter|unter,und,aber","Tim und ich spielen. ___ haben Spaß.|Wir|Wir,Er,Es","Das ist ___ Apfel.|ein|ein,eine,die","Lisa will spielen, ___ es regnet.|aber|aber,auf,wir","Wir sehen ___ Löwen.|drei|drei,und,im"],
+F:["Pronomen kann man für Nomen einsetzen.|1","Adjektive sagen, was jemand tut.|0","Verben nennt man auch Tunwörter.|1","„weil“ ist eine Präposition.|0","Numerale sind Zahlwörter.|1","Artikel sind Begleiter des Nomens.|1","„neben“ ist eine Konjunktion.|0","Nomen schreibt man klein.|0"]},
+{n:"Level 3 · Profi",e:"🏆",d:"Wie in der Probe: knifflige Sätze, alle Wortarten.",opt:8,
+S:["Nach:P dem:A Unterricht:N spielen:V wir:O Fußball:N.","Der:A mutige:J Ritter:N kämpft:V gegen:P den:A grünen:J Drachen:N.","Weil:K es:O regnet:V, bleiben:V die:A Kinder:N im:P Haus:N.","Die:A zwölf:Z Schüler:N warten:V vor:P der:A Tür:N und:K sie:O sind:V ungeduldig:J.","Du:O kannst:V Tee:N oder:K Kakao:N trinken:V.","Die:A schnelle:J Läuferin:N gewinnt:V drei:Z Medaillen:N.","Wir:O fahren:V mit:P dem:A Bus:N, denn:K der:A Weg:N ist:V weit:J.","Ihr:O habt:V ein:A schönes:J Bild:N gemalt:V.","Der:A Bäcker:N backt:V frisches:J Brot:N für:P die:A Stadt:N.","Ich:O lese:V ein:A Buch:N, aber:K er:O schaut:V einen:A Film:N.","Die:A Katze:N springt:V über:P den:A hohen:J Zaun:N.","Zehn:Z kleine:J Fische:N schwimmen:V im:P Teich:N.","Sie:O wartet:V auf:P den:A Bus:N und:K liest:V ein:A Heft:N.","Wenn:K die:A Sonne:N scheint:V, gehen:V wir:O in:P den:A Park:N.","Der:A müde:J Opa:N schläft:V in:P dem:A weichen:J Sessel:N."],
+W:["Wetter:N","gefährlich:J","gewinnen:V","ihr:O","den:A","hundert:Z","denn:K","gegen:P","Freude:N","gesund:J","schwimmen:V","es:O","einem:A","zwölf:Z","dass:K","durch:P"],
+O:["in,auf,aber,vor|aber","ein,eine,der,wir|wir","grün,mutig,laufen,klein|laufen","denn,weil,dass,hinter|hinter","sieben,zwölf,hundert,sehen|sehen","du,wir,die,sie|die"],
+G:["___ es regnet, bleiben wir zu Hause.|Weil|Weil,Mit,Wir","Er wartet ___ den Bus.|auf|auf,und,aber","Das ist ___ Katze.|eine|eine,ein,der","Anna ist müde, ___ sie hat wenig geschlafen.|denn|denn,mit,wir","Die Kinder lachen, ___ sie spielen.|weil|weil,vor,ihr","___ habt ein tolles Bild gemalt.|Ihr|Ihr,Die,Und","Der Vogel fliegt ___ das Haus.|über|über,und,oder"],
+F:["„Er“ in „Er lacht.“ ist ein Pronomen.|1","In „zwei Hunde“ ist „zwei“ ein Artikel.|0","„denn“ und „aber“ sind Konjunktionen.|1","„über“ und „unter“ sind Verben.|0","In „der rote Ball“ ist „rot“ ein Adjektiv.|1","„Freude“ ist ein Nomen.|1","In „Wir spielen.“ ist „spielen“ ein Nomen.|0","„hinter“ ist eine Präposition.|1"]}];
+const ART=["ein","ein","ein","ein","ein","ein","eine","eine"],
+WP={N:"Hund Katze Tisch Blume Schule Ball Haus Baum Lehrerin Freund Fußball Zoo Wetter Freude Buch Auto",V:"laufen spielen lachen essen malen singen schlafen lesen rennen schreiben springen schwimmen backen gewinnen",J:"rot klein lustig schnell kalt schön groß nett mutig freundlich müde gesund hungrig",O:"ich du er sie es wir ihr",A:"der die das ein eine dem den einen einem",Z:"eins zwei drei vier fünf sechs zehn zwölf zwanzig hundert dreißig",K:"und oder aber weil denn dass wenn",P:"auf unter neben hinter in vor mit für über an zwischen gegen"},
+W=[..."NVJOAZKP"].map(k=>WP[k].split(" ")),
+FN={mark:"Markiertes Wort benennen",pw:"Wort im Satz finden",t:"Wörter antippen",t1:"Das eine Wort finden",tl:"Kreuze an",s:"Wörter sortieren",mem:"Memory",m:"Zuordnen",ft:"Fachbegriffe",odd:"Außenseiter finden",tf:"Stimmt das?",spot:"Wörter zählen",gap:"Lückentext",sb:"Satz Wort für Wort bestimmen"};
+Object.assign(LV[0],{d:"Memory, Sortieren, Antippen, Auswählen. Meist nur 4 Antworten.",bk:3,pc:3,mp:4,mm:"de",mr:4,sbm:0,p:[["mark",14],["pw",14],["t",14],["tl",8],["s",6],["mem",3],["m",3],["ft",12],["odd",10],["tf",10],["gap",6]]});
+Object.assign(LV[1],{d:"Sätze Wort für Wort bestimmen, Wörter zählen, Zuordnen. Alle 8 Wortarten.",bk:4,pc:2,mp:6,mm:"w",mr:5,sbm:7,p:[["t",14],["tl",8],["sb",5],["s",6],["m",4],["mem",2],["spot",14],["pw",14],["odd",10],["gap",7],["ft",8],["tf",8]]});
+Object.assign(LV[2],{d:"Wie in der Probe: knifflige Sätze, ganze Sätze bestimmen, alle 8 Wortarten.",bk:6,pc:2,mp:6,mm:"w",mr:8,sbm:10,p:[["sb",6],["mark",15],["t1",15],["spot",15],["s",4],["tl",8],["m",3],["odd",10],["tf",8],["gap",7],["pw",15]]});
+const $=s=>document.querySelector(s),sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a},
+op=(a,n,l)=>sh([a,...sh(l.filter(x=>x!==a)).slice(0,n-1)]),
+ps=s=>s.split(" ").map(w=>{let m=w.match(/^(.+?):([NVJOAZKP])(.*)$/);return{x:m[1]+m[3],t:TG[m[2]]}}),
+rw=(t,n)=>sh(W[t]).slice(0,n),cl=x=>x.replace(/[.,]/g,"");
+function build(v){const n=v.opt,S=sh(v.S).map(ps),GG=sh(v.G),ty=[0,1,2,3,4,5,6,7],rn=a=>a[Math.random()*a.length|0],
+pr=s=>[...new Set(s.map(w=>w.t))],so=(a,i)=>a[i%a.length],
+one=(s,i)=>{const c=ty.filter(t=>s.filter(w=>w.t==t).length==1);return c.length?c[i%c.length]:-1},
+G={
+mark:i=>{const s=so(S,i);let u=0;for(let k=0;k<8;k++){let j=s.findIndex(w=>w.t==(i+k)%8);if(j>=0){u=j;break}}const a=TY[s[u].t];return{k:"c",q:"Welche Wortart hat das markierte Wort?",h:s.map((w,j)=>j==u?`<mark>${w.x}</mark>`:w.x).join(" "),a,o:op(a,n,TY),w:25}},
+pw:i=>{const s=so(S,i+3),t=one(s,i);if(t<0)return null;const a=cl(s.find(x=>x.t==t).x),o=sh([...new Set(s.filter(x=>x.t!=t).map(x=>cl(x.x)))]).filter(x=>x!==a).slice(0,3);if(o.length<3)return null;return{k:"c",q:`Welches Wort im Satz ist ${ART[t]} ${TY[t]}?`,h:s.map(x=>x.x).join(" "),a,o:sh([a,...o]),w:25}},
+t:i=>{const s=so(S,i+5),p=pr(s);return{k:"t",ws:s,tt:p[(i*3+1)%p.length],w:45}},
+t1:i=>{const s=so(S,i+2),t=one(s,i);return t<0?null:{k:"t1",ws:s,tt:t,w:25}},
+tl:i=>{const t=ty[i%8],ws=rw(t,3).map(x=>({x,t}));sh(ty.filter(u=>u!=t)).slice(0,5).forEach(u=>ws.push({x:rw(u,1)[0],t:u}));return{k:"t",ws:sh(ws),tt:t,w:35}},
+s:i=>{const bt=sh(ty).slice(0,v.bk),ch=bt.flatMap(t=>rw(t,v.pc).map(x=>({x,t})));return{k:"s",bt,ch:sh(ch),w:ch.length*9}},
+mem:i=>({k:"mem",c:sh(sh(ty).slice(0,v.mp).flatMap(t=>[{x:TY[t],p:t},{x:DE[t],p:t}])),w:v.mp*20}),
+m:i=>{const t=sh(ty).slice(0,v.mr);return{k:"m",r:t.map(x=>[v.mm=="de"?DE[x]:rw(x,1)[0],TY[x]]),ol:v.mm=="de"?t.map(x=>TY[x]):TY,w:t.length*12}},
+ft:i=>{if(i>15)return null;const t=i>>1;return i%2?{k:"c",q:`Welches deutsche Wort passt zu „${TY[t]}“?`,a:DE[t],o:op(DE[t],n,DE),w:25}:{k:"c",q:`Wie heißt das Fachwort für „${DE[t]}“?`,a:TY[t],o:op(TY[t],n,TY),w:25}},
+odd:i=>{const a=ty[i%8],x=rw(rn(ty.filter(u=>u!=a)),1)[0];return{k:"c",q:"Welches Wort gehört nicht zu den anderen?",a:x,o:sh([...rw(a,3),x]),w:25}},
+tf:i=>{const t=ty[(i*5)%8],w=rw(t,1)[0],ok=Math.random()<.5,c=ok?t:rn(ty.filter(u=>u!=t));return{k:"c",q:`„${w}“ ist ${ART[c]} ${TY[c]}.`,a:ok?"stimmt":"stimmt nicht",o:["stimmt","stimmt nicht"],w:20}},
+spot:i=>{const s=so(S,i+1),p=pr(s),t=p[i%p.length],c=s.filter(w=>w.t==t).length,ok=Math.random()<.5,N=ok?c:(c>1&&Math.random()<.5?c-1:c+1);return{k:"c",q:`In diesem Satz kommen genau ${N} ${N==1?TY[t]:PL[t]} vor. Stimmt das?`,h:s.map(x=>x.x).join(" "),a:ok?"stimmt":"stimmt nicht",o:["stimmt","stimmt nicht"],w:30}},
+gap:i=>{const g=GG[i];if(!g)return null;const[b,a,o]=g.split("|");return{k:"c",q:"Welches Wort passt in die Lücke?",b,a,o:sh(o.split(",")),w:30}},
+sb:i=>{const c=S.filter(s=>s.length<=v.sbm);if(!c.length)return null;const s=so(c,i);return{k:"sb",ws:s,w:s.length*9}}},
+P={};v.p.forEach(([f,c])=>{P[f]=[];for(let i=0;i<c*3&&P[f].length<c;i++){const x=G[f](i);if(x)P[f].push({...x,f})}});
+const out=[];let last="";while(v.p.some(([f])=>P[f].length)){const r=sh(v.p.map(x=>x[0]).filter(f=>P[f].length));if(r[0]==last&&r.length>1)r.push(r.shift());r.forEach(f=>out.push(P[f].shift()));last=r[r.length-1]}
+return out}
+const mins=Q=>Math.max(1,Math.round(Q.reduce((a,x)=>a+x.w,0)/60));
+let Q,i,sc,wr,lk,cv;
+function home(){$("#app").innerHTML=`<div class=hero><div class=logo>🔎</div><h1>Wortarten-Detektive</h1><p>Übe für die Probe! Wähle dein Level.</p></div>`+LV.map((l,k)=>{const q=build(l);return `<button class=lvl data-k=${k}><span>${l.e}</span><b>${l.n}</b><small>${l.d}<br>${q.length} Aufgaben · ca. ${Math.round(mins(q)/5)*5} Min.</small></button>`}).join("")}
+function start(k){cv=LV[k];Q=build(cv);i=0;sc=0;wr=[];show()}
+function fin(ok,msg){if(ok)sc++;else wr.push(Q[i]);$("#fb").innerHTML=`<div class="fb ${ok?"g":"r"}">${msg}</div><button class=go id=nx>${i+1<Q.length?"Weiter ➜":"Fertig ✔"}</button>`}
+function ra(){const it=Q[i];let h="";
+if(it.k=="s")h=`<div class=chips>${it.rem.map((w,k)=>`<button class="chip${k==it.sel?" sel":""}${k==it.bd?" bad":""}" data-k=${k}>${w.x}</button>`).join("")}</div><div class=bks>${it.bt.map(t=>`<button class=bsk data-t=${t}><b>${TY[t]}</b><div>${(it.pl[t]||[]).join(", ")}</div></button>`).join("")}</div>`;
+else if(it.k=="mem")h=`<div class=mg>${it.cd.map((c,k)=>`<button class="cardm${c.o||c.d?" op":""}${c.d?" ok":""}" data-k=${k}>${c.o||c.d?c.x:"?"}</button>`).join("")}</div><p>Fehlversuche: ${it.mi}</p>`;
+else{h=`<div>${it.ws.map((w,j)=>{const a=it.an[j];return `<span class=sw>${j==it.ix?`<mark>${w.x}</mark>`:w.x}<small class="${a&&!a.ok?"x":""}">${a?a.l:"&nbsp;"}</small></span>`}).join("")}</div>`;
+if(it.ix<it.ws.length){it.o=op(TY[it.ws[it.ix].t],cv.opt,TY);h+=`<div class=opts>${it.o.map(o=>`<button class=so>${o}</button>`).join("")}</div>`}}
+$("#sa").innerHTML=h}
+function show(){if(i>=Q.length)return end();lk=0;const it=Q[i];
+let h=`<div class=top><button class=ghost id=bk>⌂</button><div class=bar><i style="width:${i/Q.length*100}%"></i></div><span>${i+1}/${Q.length} · noch ca. ${mins(Q.slice(i))} Min.</span></div><div class=card><div class=st>${FN[it.f]}</div>`;
+if(it.k=="c")h+=`<h2>${it.q}</h2>${it.b?`<div class=big>${it.b}</div>`:""}${it.h?`<div class=sent>${it.h}</div>`:""}<div class=opts>${it.o.map(o=>`<button class=opt>${o}</button>`).join("")}</div>`;
+else if(it.k=="t"||it.k=="t1"){const q=it.k=="t1"?`Klicke das Wort an, das ${ART[it.tt]} <b>${TY[it.tt]}</b> ist.`:it.f=="tl"?`Kreuze alle <b>${PL[it.tt]}</b> an.`:`Tippe alle <b>${PL[it.tt]}</b> im Satz an.`;h+=`<h2>${q}</h2><div class="ws${it.f=="tl"?" cb":""}">${it.ws.map(w=>`<button class=wd>${w.x}</button>`).join("")}</div>${it.k=="t"?"<button class=go id=pt>Prüfen</button>":""}`}
+else if(it.k=="s"){it.rem=[...it.ch];it.pl={};it.er=0;it.sel=-1;it.bd=-1;h+=`<h2>Tippe ein Wort an und dann den passenden Korb.</h2><div id=sa></div>`}
+else if(it.k=="mem"){it.cd=it.c.map(c=>({...c,o:0,d:0}));it.f1=-1;it.mi=0;it.bs=0;h+=`<h2>Finde die Paare: Fachbegriff und deutscher Name.</h2><div id=sa></div>`}
+else if(it.k=="sb"){it.ix=0;it.al=1;it.an=[];h+=`<h2>Bestimme jedes Wort. Das markierte Wort ist dran.</h2><div id=sa></div>`}
+else h+=`<h2>Wähle zu jedem Wort die richtige Zuordnung.</h2>${sh(it.r).map(([l,a])=>`<div class=row><b>${l}</b><select data-a="${a}"><option value="">Wähle …</option>${sh(it.ol).map(o=>`<option>${o}</option>`).join("")}</select></div>`).join("")}<button class=go id=pm>Prüfen</button>`;
+$("#app").innerHTML=h+`<div id=fb></div></div>`;if(["s","mem","sb"].includes(it.k))ra()}
+function end(){const p=Math.round(sc/Q.length*100),s=p>=90?3:p>=70?2:p>=50?1:0;
+$("#app").innerHTML=`<div class="card end"><div class=stars>${"⭐".repeat(s)}${"☆".repeat(3-s)}</div><h1>${sc} von ${Q.length} richtig</h1><p>${s==3?"Wortarten-Meister! Du bist bereit für die Probe! 🎉":s==2?"Sehr gut! Mit etwas Übung wirst du noch besser. 💪":s==1?"Guter Anfang! Übe die Fehler noch einmal. 🌱":"Bleib dran! Probiere die Fehler-Runde. 🔎"}</p>${wr.length?`<button class=go id=fx>Fehler noch einmal üben (${wr.length})</button><br>`:""}<button class=go id=bk>Anderes Level</button></div>`}
+$("#app").onclick=e=>{const b=e.target.closest("button");if(!b)return;const c=b.classList,it=Q&&Q[i];
+if(c.contains("lvl"))return start(+b.dataset.k);
+if(b.id=="bk")return home();
+if(b.id=="nx"){i++;return show()}
+if(b.id=="fx"){Q=sh(wr);i=0;sc=0;wr=[];return show()}
+if(lk)return;
+if(c.contains("opt")){lk=1;const ok=b.textContent===it.a;document.querySelectorAll(".opt").forEach(x=>{x.disabled=1;if(x.textContent===it.a)x.classList.add("ok")});if(!ok)c.add("bad");fin(ok,ok?"Richtig! 🎉":`Fast! Richtig ist: <b>${it.a}</b>`)}
+else if(c.contains("wd")){if(it.k=="t1"){const ok=it.ws[[...document.querySelectorAll(".wd")].indexOf(b)].t==it.tt;lk=1;document.querySelectorAll(".wd").forEach((x,j)=>{x.disabled=1;if(it.ws[j].t==it.tt)x.classList.add("ok")});if(!ok)c.add("bad");fin(ok,ok?"Genau! 🎉":"Leider nicht. Grün ist das richtige Wort.")}else c.toggle("sel")}
+else if(b.id=="pt"){lk=1;let ok=1;document.querySelectorAll(".wd").forEach((x,k)=>{const s=x.classList.contains("sel"),r=it.ws[k].t==it.tt;if(s!=r)ok=0;x.disabled=1;x.classList.remove("sel");if(s&&r)x.classList.add("ok");else if(s)x.classList.add("bad");else if(r)x.classList.add("miss")});fin(ok,ok?"Super, alle gefunden! 🎉":"Gestrichelt = übersehen, rot = falsch angetippt.")}
+else if(b.id=="pm"){lk=1;let ok=1;document.querySelectorAll("select").forEach(s=>{const a=s.dataset.a,r=s.value===a;if(!r)ok=0;s.disabled=1;s.parentNode.classList.add(r?"ok":"bad");if(!r)s.parentNode.insertAdjacentHTML("beforeend",`<span>→ <b>${a}</b></span>`)});fin(ok,ok?"Alles richtig zugeordnet! 🎉":"Schau dir die richtigen Lösungen an.")}
+else if(c.contains("chip")){it.sel=+b.dataset.k;ra()}
+else if(c.contains("bsk")){if(it.sel<0)return;const w=it.rem[it.sel],t=+b.dataset.t;
+if(w.t==t){(it.pl[t]=it.pl[t]||[]).push(w.x);it.rem.splice(it.sel,1);it.sel=-1;it.bd=-1;ra();if(!it.rem.length){lk=1;fin(it.er<=2,it.er?`Fertig! Fehlversuche: ${it.er}`:"Alles richtig sortiert! 🎉")}}
+else{it.er++;it.bd=it.sel;ra();setTimeout(()=>{it.bd=-1;if(Q[i]==it&&!lk)ra()},600)}}
+else if(c.contains("cardm")){const k=+b.dataset.k,cd=it.cd[k];if(cd.o||cd.d||it.bs)return;cd.o=1;
+if(it.f1<0)it.f1=k;else{const a=it.cd[it.f1];if(a.p==cd.p){a.d=cd.d=1;a.o=cd.o=0;it.f1=-1;if(it.cd.every(x=>x.d)){lk=1;ra();fin(it.mi<=it.cd.length/2+2,`Alle Paare gefunden! Fehlversuche: ${it.mi}`);return}}
+else{it.mi++;it.bs=1;setTimeout(()=>{a.o=cd.o=0;it.f1=-1;it.bs=0;if(Q[i]==it)ra()},900)}}ra()}
+else if(c.contains("so")){const w=it.ws[it.ix],ok=b.textContent===TY[w.t];it.an.push({l:b.textContent,ok});if(!ok)it.al=0;it.ix++;ra();
+if(it.ix>=it.ws.length){lk=1;const bad=it.ws.filter((x,j)=>!it.an[j].ok).map(x=>`${cl(x.x)} = ${TY[x.t]}`);fin(it.al,it.al?"Der ganze Satz stimmt! 🎉":"Rot war falsch. Richtig wäre: "+bad.join(", "))}}};
+home();
+</script>
+</body>
+</html>
